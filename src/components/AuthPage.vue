@@ -47,6 +47,7 @@ const onFormSubmit = async () => {
                         :feedback="false"
                         toggleMask
                         class="w-full"
+                        fluid
                     />
                     <label for="on_label">Пароль</label>
                 </FloatLabel>

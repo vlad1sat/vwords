@@ -6,6 +6,7 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 import Components from 'unplugin-vue-components/vite';
 import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 import tailwindcss from '@tailwindcss/vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -16,6 +17,12 @@ export default defineConfig({
         tailwindcss(),
         Components({
             resolvers: [PrimeVueResolver()],
+        }),
+        VitePWA({
+            registerType: 'autoUpdate',
+            manifest: {
+                name: 'vwords',
+            },
         }),
     ],
     resolve: {
