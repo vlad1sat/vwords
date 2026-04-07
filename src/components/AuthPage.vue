@@ -2,8 +2,9 @@
 import { useUserStore } from '@/stores/userStore.ts';
 import { loginService } from '@/services/loginService.ts';
 import { useToast } from 'primevue/usetoast';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import router from '@/router';
+import { storeToRefs } from 'pinia';
 
 const toast = useToast();
 const values = ref({
@@ -11,10 +12,21 @@ const values = ref({
     password: '',
 });
 
-const { setUser } = useUserStore();
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
+
+watch(user, () => {
+    if (user) {
+        router.push('/');
+    }
+});
 
 const onFormSubmit = async () => {
-    const [, error] = await loginService.login(setUser, values.value.email, values.value.password);
+    const [, error] = await loginService.login(
+        userStore.setUser,
+        values.value.email,
+        values.value.password,
+    );
     if (error) {
         toast.add({
             severity: 'error',
@@ -25,8 +37,6 @@ const onFormSubmit = async () => {
 
         return;
     }
-
-    router.push({ path: '/packs' });
 };
 </script>
 

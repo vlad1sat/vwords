@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia';
 import { ref, watch } from 'vue';
-import type { Language } from '@/services/languageService.ts';
+import type { SelectType } from '@/utils/types.ts';
 
 export const useLanguageStore = defineStore('language', () => {
-    const selectedPacks = ref<Set<string>>(new Set());
-    const selectedLanguage = ref<Language | null>(null);
+    const selectedPacks = ref<Set<number>>(new Set());
+    const selectedLanguage = ref<SelectType<string> | null>(null);
 
-    const onChangeSelectedPacks = (packId: string, checked: boolean) => {
+    const onChangeSelectedPacks = (packId: number, checked: boolean) => {
         if (checked) {
             selectedPacks.value.add(packId);
             return;

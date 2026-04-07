@@ -11,7 +11,8 @@
     "type-check": "vue-tsc --build",
     "lint": "run-s lint:*",
     "lint:fix": "eslint . --fix --cache",
-    "format": "prettier --write --experimental-cli src/"
+    "format": "prettier --write --experimental-cli src/",
+    "firebase:deploy": "pnpm run build && firebase deploy"
   },
   "dependencies": {
     "@primeuix/themes": "2.0.3",

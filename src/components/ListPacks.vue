@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { type LanguageInfo, languageService, type WorldPack } from '@/services/languageService.ts';
+import { type LanguageInfo, languageService, type WordPack } from '@/services/languageService.ts';
 import { useLanguageStore } from '@/stores/languageStore.ts';
 import { storeToRefs } from 'pinia';
 
@@ -8,7 +8,7 @@ const languageStore = useLanguageStore();
 const { selectedLanguage, selectedPacks } = storeToRefs(languageStore);
 
 const languagesInfo = ref<LanguageInfo[]>([]);
-const languageWorldPacks = ref<WorldPack[]>([]);
+const languageWorldPacks = ref<WordPack[]>([]);
 
 onMounted(async () => {
     languagesInfo.value = await languageService.getLanguagesInfo();
@@ -19,6 +19,7 @@ watch(selectedLanguage, () => {
         languagesInfo.value,
         selectedLanguage.value!.name,
     );
+    console.log(languageWorldPacks.value);
 });
 </script>
 
@@ -26,7 +27,7 @@ watch(selectedLanguage, () => {
     <div class="min-h-screen bg-gray-50 p-4 md:p-6">
         <div class="max-w-4xl mx-auto">
             <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Выберите паки</h1>
-            <div class="mb-8">
+            <div class="flex gap-4 mb-8">
                 <Select
                     v-model="selectedLanguage"
                     :options="languageService.getLanguages(languagesInfo)"
@@ -34,6 +35,13 @@ watch(selectedLanguage, () => {
                     placeholder="Выберите язык"
                     class="w-full md:w-64 bg-white rounded-xl shadow-sm"
                 />
+                <RouterLink to="/add">
+                    <Button
+                        class="bg-indigo-600 hover:bg-indigo-700 border-none text-white font-semibold px-8 py-2 rounded-full shadow-md transition-all"
+                    >
+                        Добавить новое слово
+                    </Button>
+                </RouterLink>
             </div>
             <div
                 v-if="languageWorldPacks.length"

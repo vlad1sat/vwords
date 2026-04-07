@@ -24,7 +24,7 @@ const checkAnswer = () => {
     const examples =
         trainType.value === TrainType.ForeignWorld
             ? selectedItem.TranslateVariants
-            : selectedItem.Word;
+            : [selectedItem.Word];
 
     if (languageService.checkWorld(inputValue.value, ...examples)) {
         status.value = 'correct';
@@ -50,7 +50,7 @@ const goToNextWord = () => {
                 {{
                     trainType === TrainType.ForeignWorld
                         ? selectedItem.Word
-                        : selectedItem.TranslateVariants.join(', ')
+                        : selectedItem.TranslateVariants.join('/ ')
                 }}
             </div>
         </div>

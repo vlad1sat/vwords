@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { loginService } from '@/services/loginService.ts';
 import { useUserStore } from '@/stores/userStore.ts';
+import { storeToRefs } from 'pinia';
 
-const { setUser } = useUserStore();
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
 </script>
 
 <template>
@@ -22,7 +24,16 @@ const { setUser } = useUserStore();
                     К пакам
                 </Button>
             </RouterLink>
-            <RouterLink to="/auth" class="w-full">
+
+            <RouterLink to="/packs" class="w-full">
+                <Button
+                    disabled
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 border-none text-white font-semibold py-2 rounded-xl shadow-md transition-all"
+                >
+                    К заданиям
+                </Button>
+            </RouterLink>
+            <RouterLink v-if="!user" to="/auth" class="w-full">
                 <Button
                     class="w-full bg-emerald-600 hover:bg-emerald-700 border-none text-white font-semibold py-2 rounded-xl shadow-md transition-all"
                 >
@@ -30,8 +41,9 @@ const { setUser } = useUserStore();
                 </Button>
             </RouterLink>
             <Button
+                v-if="user"
                 class="w-full bg-rose-600 hover:bg-rose-700 border-none text-white font-semibold py-2 rounded-xl shadow-md transition-all"
-                @click="() => loginService.logout(setUser)"
+                @click="() => loginService.logout(userStore.setUser)"
             >
                 Выйти
             </Button>
