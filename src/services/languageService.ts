@@ -76,8 +76,8 @@ class LanguageService {
         }
     }
 
-    getLanguages(info: LanguageInfo[]): SelectType<string>[] {
-        return info.map((l) => ({ name: l.Title, code: l.Title }));
+    getLanguages(userId: string, info: LanguageInfo[]): SelectType<string>[] {
+        return info.filter((l) => l.UUID === userId).map((l) => ({ name: l.Title, code: l.Title }));
     }
 
     getLanguageWorldPacks(info: LanguageInfo[], language: string): WordPack[] {

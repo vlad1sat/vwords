@@ -3,8 +3,10 @@ import { onMounted, ref, watch } from 'vue';
 import { type LanguageInfo, languageService, type WordPack } from '@/services/languageService.ts';
 import { useLanguageStore } from '@/stores/languageStore.ts';
 import { storeToRefs } from 'pinia';
+import { useUserStore } from '@/stores/userStore.ts';
 
 const languageStore = useLanguageStore();
+const { user } = useUserStore();
 const { selectedLanguage, selectedPacks } = storeToRefs(languageStore);
 
 const languagesInfo = ref<LanguageInfo[]>([]);
@@ -19,7 +21,6 @@ watch(selectedLanguage, () => {
         languagesInfo.value,
         selectedLanguage.value!.name,
     );
-    console.log(languageWorldPacks.value);
 });
 </script>
 
@@ -30,7 +31,7 @@ watch(selectedLanguage, () => {
             <div class="flex gap-4 mb-8">
                 <Select
                     v-model="selectedLanguage"
-                    :options="languageService.getLanguages(languagesInfo)"
+                    :options="languageService.getLanguages(user?.uid!, languagesInfo)"
                     optionLabel="name"
                     placeholder="Выберите язык"
                     class="w-full md:w-64 bg-white rounded-xl shadow-sm"

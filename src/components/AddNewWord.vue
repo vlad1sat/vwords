@@ -98,7 +98,7 @@ const saveNewWord = async (): Promise<void> => {
                     <label class="block text-sm font-semibold text-gray-700">Язык</label>
                     <Select
                         v-model="selectedLanguage"
-                        :options="languageService.getLanguages(languagesInfo)"
+                        :options="languageService.getLanguages(user?.uid!, languagesInfo)"
                         optionLabel="name"
                         placeholder="Выберите язык"
                         class="w-full md:w-72"
