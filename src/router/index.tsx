@@ -37,6 +37,12 @@ const router = createRouter({
             component: <TrainPage />,
             meta: { requiresAuth: true },
         },
+        {
+            path: '/korean-numbers',
+            name: 'korean-numbers',
+            component: () => import('@/features/koreanNumbers/KoreanNumbersPage.vue'),
+            meta: { requiresAuth: true },
+        },
         /*{
             path: '/about',
             name: 'about',

@@ -9,14 +9,19 @@ import { auth } from '@/firebase/initFirebase.ts';
 import { FirebaseError } from 'firebase/app';
 
 class LoginService {
-    authStateChange(setUser: (user: User | null) => void): Unsubscribe {
-        return onAuthStateChanged(auth, (user) => {
-            if (user) {
+    authStateChange(setUser: (user: User | null) => void, onReady?: () => void): Unsubscribe {
+        return onAuthStateChanged(
+            auth,
+            (user) => {
                 setUser(user);
-            } else {
-                console.error('Not logged in');
-            }
-        });
+                onReady?.();
+            },
+            (error) => {
+                console.error('Auth state error', error);
+                setUser(null);
+                onReady?.();
+            },
+        );
     }
 
     async login(
@@ -34,8 +39,8 @@ class LoginService {
     }
 
     async logout(setUser: (user: User | null) => void): Promise<void> {
+        await signOut(auth);
         setUser(null);
-        return signOut(auth);
     }
 }
 

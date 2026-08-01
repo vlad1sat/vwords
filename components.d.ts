@@ -13,6 +13,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AddNewWord: typeof import('./src/components/AddNewWord.vue')['default']
+    ApiLoader: typeof import('./src/components/ApiLoader.vue')['default']
     AuthPage: typeof import('./src/components/AuthPage.vue')['default']
     Button: typeof import('primevue/button')['default']
     FloatLabel: typeof import('primevue/floatlabel')['default']
@@ -33,6 +34,7 @@ declare module 'vue' {
 // For TSX support
 declare global {
   const AddNewWord: typeof import('./src/components/AddNewWord.vue')['default']
+  const ApiLoader: typeof import('./src/components/ApiLoader.vue')['default']
   const AuthPage: typeof import('./src/components/AuthPage.vue')['default']
   const Button: typeof import('primevue/button')['default']
   const FloatLabel: typeof import('primevue/floatlabel')['default']
