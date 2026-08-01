@@ -1,6 +1,6 @@
 import { collection, doc, getDocs, runTransaction } from 'firebase/firestore';
 import { db } from '@/firebase/initFirebase.ts';
-import { normaliseWorld } from '@/utils/normaliseWorld.ts';
+import { getWorldEditDistance, normaliseWorld } from '@/utils/normaliseWorld.ts';
 import { FirebaseError } from 'firebase/app';
 import type { SelectType } from '@/utils/types.ts';
 
@@ -8,6 +8,10 @@ export interface Item {
     Pronunciation: string;
     TranslateVariants: string[];
     Word: string;
+}
+
+export interface ItemWithState extends Item {
+    IsTranslateAsked: boolean;
 }
 
 export interface WordPack {
@@ -95,9 +99,26 @@ class LanguageService {
     }
 
     checkWorld(word: string, ...examples: string[]): boolean {
+        const normalizedWord = normaliseWorld(word);
+
         for (const example of examples) {
-            if (normaliseWorld(word) === normaliseWorld(example)) return true;
+            const normalizedExample = normaliseWorld(example);
+            if (!normalizedWord || !normalizedExample) {
+                continue;
+            }
+
+            if (normalizedWord === normalizedExample) {
+                return true;
+            }
+
+            const maxWorldLength = Math.max(normalizedWord.length, normalizedExample.length);
+            const allowedTypos = maxWorldLength <= 3 ? 0 : maxWorldLength <= 7 ? 1 : 2;
+
+            if (getWorldEditDistance(normalizedWord, normalizedExample) <= allowedTypos) {
+                return true;
+            }
         }
+
         return false;
     }
 }

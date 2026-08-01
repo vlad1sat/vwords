@@ -11,31 +11,39 @@ const values = ref({
     email: '',
     password: '',
 });
+const isLoggingIn = ref(false);
 
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 
 watch(user, () => {
-    if (user) {
+    if (user.value) {
         router.push('/');
     }
 });
 
 const onFormSubmit = async () => {
-    const [, error] = await loginService.login(
-        userStore.setUser,
-        values.value.email,
-        values.value.password,
-    );
-    if (error) {
-        toast.add({
-            severity: 'error',
-            summary: 'Ошибка авторизации',
-            detail: error.message,
-            life: 3000,
-        });
-
+    if (isLoggingIn.value) {
         return;
+    }
+
+    isLoggingIn.value = true;
+    try {
+        const [, error] = await loginService.login(
+            userStore.setUser,
+            values.value.email,
+            values.value.password,
+        );
+        if (error) {
+            toast.add({
+                severity: 'error',
+                summary: 'Ошибка авторизации',
+                detail: error.message,
+                life: 3000,
+            });
+        }
+    } finally {
+        isLoggingIn.value = false;
     }
 };
 </script>
@@ -65,6 +73,8 @@ const onFormSubmit = async () => {
                     type="submit"
                     severity="secondary"
                     label="Войти"
+                    :loading="isLoggingIn"
+                    :disabled="isLoggingIn"
                     class="w-full sm:w-auto mt-2 bg-indigo-600 hover:bg-indigo-700 border-none text-white font-semibold py-2 px-6 rounded-lg transition-all"
                     @click="onFormSubmit"
                 />

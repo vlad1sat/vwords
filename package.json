@@ -7,6 +7,8 @@
     "start": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "run-s lint:*",
@@ -45,6 +47,7 @@
     "vite": "^7.3.1",
     "vite-plugin-pwa": "^1.2.0",
     "vite-plugin-vue-devtools": "^8.0.7",
+    "vitest": "^4.1.10",
     "vue-tsc": "^3.2.5",
     "workbox-build": "7.4.0",
     "workbox-window": "7.4.0"
