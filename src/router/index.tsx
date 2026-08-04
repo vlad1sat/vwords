@@ -5,6 +5,7 @@ import ListPacks from '@/components/ListPacks.vue';
 import TrainPage from '@/components/TrainPage.vue';
 import HomePage from '@/components/HomePage.vue';
 import AddNewWord from '@/components/AddNewWord.vue';
+import { loginService } from '@/services/loginService.ts';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -54,16 +55,36 @@ const router = createRouter({
     ],
 });
 
-router.beforeEach((to, from, next) => {
-    const { user } = useUserStore();
-    const isAuthenticated = !!user?.uid;
+router.beforeEach(async (to) => {
+    const userStore = useUserStore();
 
-    if (to.meta.requiresAuth && !isAuthenticated) {
-        next('/auth');
-        return;
+    try {
+        const user = await loginService.getAuthenticatedUser();
+        userStore.setUser(user);
+
+        if (to.meta.requiresAuth && !user) {
+            return {
+                name: 'auth',
+                query: { redirect: to.fullPath },
+            };
+        }
+
+        if (to.name === 'auth' && user) {
+            return { name: 'home' };
+        }
+    } catch (error) {
+        console.error('Failed to restore auth state', error);
+        userStore.setUser(null);
+
+        if (to.meta.requiresAuth) {
+            return {
+                name: 'auth',
+                query: { redirect: to.fullPath },
+            };
+        }
     }
 
-    next();
+    return true;
 });
 
 export default router;

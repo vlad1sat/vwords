@@ -5,6 +5,7 @@ import { useToast } from 'primevue/usetoast';
 import { ref, watch } from 'vue';
 import router from '@/router';
 import { storeToRefs } from 'pinia';
+import { useRoute } from 'vue-router';
 
 const toast = useToast();
 const values = ref({
@@ -15,10 +16,17 @@ const isLoggingIn = ref(false);
 
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
+const route = useRoute();
 
 watch(user, () => {
     if (user.value) {
-        router.push('/');
+        const redirect =
+            typeof route.query.redirect === 'string' &&
+            route.query.redirect.startsWith('/') &&
+            !route.query.redirect.startsWith('//')
+                ? route.query.redirect
+                : '/';
+        router.replace(redirect);
     }
 });
 

@@ -90,6 +90,14 @@ const logout = async (): Promise<void> => {
                     Корейские числительные
                 </Button>
             </RouterLink>
+            <Button
+                v-else
+                disabled
+                title="Авторизуйтесь, чтобы открыть тренировку"
+                class="w-full rounded-xl border-none bg-violet-600 py-2 font-semibold text-white shadow-md"
+            >
+                Корейские числительные
+            </Button>
             <RouterLink v-if="!user" to="/auth" class="w-full">
                 <Button
                     class="w-full bg-emerald-600 hover:bg-emerald-700 border-none text-white font-semibold py-2 rounded-xl shadow-md transition-all"
