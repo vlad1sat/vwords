@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type Item, languageService } from '@/services/languageService.ts';
-import { nextTick, ref, watch } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { StatusItem } from '@/utils/types.ts';
 import { getBackTrainValue, getTrainType, TrainType } from '@/utils/generateTypeTrain.ts';
 import { checkStateService } from '@/services/checkStateService.ts';
@@ -30,12 +30,18 @@ const status = ref<StatusItem | null>(null);
 const showCorrectAnswer = ref(false);
 type PendingAnswerAction = 'check' | 'unknown';
 const pendingAnswerAction = ref<PendingAnswerAction | null>(null);
+let autoNextWordTimer: ReturnType<typeof setTimeout> | null = null;
 
-const saveAnswerResult = async (
-    isCorrect: boolean,
-    action: PendingAnswerAction,
-    revealCorrectAnswer = false,
-): Promise<void> => {
+const clearAutoNextWordTimer = (): void => {
+    if (autoNextWordTimer === null) {
+        return;
+    }
+
+    clearTimeout(autoNextWordTimer);
+    autoNextWordTimer = null;
+};
+
+const saveAnswerResult = async (isCorrect: boolean, action: PendingAnswerAction): Promise<void> => {
     if (!user?.uid || pendingAnswerAction.value || status.value) {
         return;
     }
@@ -52,7 +58,7 @@ const saveAnswerResult = async (
             checkStateService.updateStateCurrentAskedWord(user.uid, true),
         ]);
         status.value = isCorrect ? 'correct' : 'failure';
-        showCorrectAnswer.value = revealCorrectAnswer;
+        showCorrectAnswer.value = true;
     } catch (error) {
         toast.add({
             severity: 'error',
@@ -76,7 +82,7 @@ const checkAnswer = async (): Promise<void> => {
 };
 
 const markAnswerUnknown = async (): Promise<void> => {
-    await saveAnswerResult(false, 'unknown', true);
+    await saveAnswerResult(false, 'unknown');
 };
 
 const goToNextWord = () => {
@@ -84,8 +90,28 @@ const goToNextWord = () => {
         return;
     }
 
+    clearAutoNextWordTimer();
     emits('goToNextWord');
 };
+
+const focusAnswerInput = async (): Promise<void> => {
+    await nextTick();
+    inputRef.value?.$el?.focus();
+};
+
+onMounted(focusAnswerInput);
+onBeforeUnmount(clearAutoNextWordTimer);
+
+watch(status, (answerStatus) => {
+    clearAutoNextWordTimer();
+
+    if (!answerStatus) {
+        return;
+    }
+
+    const delay = answerStatus === 'correct' ? 1000 : 5000;
+    autoNextWordTimer = setTimeout(goToNextWord, delay);
+});
 
 watch(
     () => props.selectedItem,
@@ -93,10 +119,9 @@ watch(
         status.value = null;
         inputValue.value = '';
         trainType.value = getTrainType();
-        await nextTick();
-        inputRef.value?.$el?.focus();
         isPronunciationRevealed.value = false;
         showCorrectAnswer.value = false;
+        await focusAnswerInput();
     },
 );
 
